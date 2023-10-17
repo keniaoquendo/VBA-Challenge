@@ -1,0 +1,102 @@
+Attribute VB_Name = "Module1"
+Sub multipleyearstock()
+
+    'loop through all worksheets
+    For Each ws In Worksheets
+
+    'add column headers Ticker, Yearly Change, %Change, Total Stock Volume
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 12).Value = "Total Stock Volume"
+        
+   'add variable for row start, volume, yearly change
+        out = 2
+        volume = 0
+        yearlychange = 0
+        
+    'determine the last row
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    'loop through rows
+        For r = 2 To LastRow
+        openyearly = ws.Cells(r, 3).Value
+        
+        
+   'filter Tickers to corresponding column
+        If ws.Cells(r + 1, 1).Value <> ws.Cells(r, 1).Value Then
+        ws.Cells(out, 9).Value = ws.Cells(r, 1).Value
+        
+    'yearly change
+        yearlychange = yearlychange + (ws.Cells(r, 6).Value - openyearly)
+        ws.Cells(out, 10).Value = yearlychange
+        
+     'percent change
+        percentchange = yearlychange / openyearly
+        ws.Cells(out, 11).Value = percentchange
+        ws.Cells(out, 11).Style = "percent"
+     
+    'output volume
+        volume = ws.Cells(r, 7).Value + volume
+        ws.Cells(out, 12).Value = volume
+        
+    'reset for next r
+        out = out + 1
+        yearlychange = 0
+        volume = 0
+      
+     Else
+       volume = Cells(r, 7).Value + volume
+       
+       
+        End If
+
+    Next r
+               
+           'format cell yearly change
+                Yearlastrow = ws.Cells(Rows.Count, 10).End(xlUp).Row
+            For r = 2 To Yearlastrow
+            
+            If ws.Cells(r, 10).Value >= 0 Then
+               ws.Cells(r, 10).Interior.ColorIndex = 4
+            
+            Else
+            
+                ws.Cells(r, 10).Interior.ColorIndex = 3
+   End If
+Next r
+
+        'add column headers
+               ws.Cells(1, 16).Value = "Ticker"
+               ws.Cells(1, 17).Value = "Value"
+               ws.Range("O2") = "Greatest % increase"
+               ws.Range("O3") = "Greatest % decrease"
+
+           'Declare variables for finding max & min %
+                percentLastRow = ws.Cells(Rows.Count, 11).End(xlUp).Row
+                percent_max = 0
+                percent_min = 0
+
+            'Add Loop
+                For r = 2 To percentLastRow
+
+            'Conditional
+                If percent_max < ws.Cells(r, 11).Value Then
+                 percent_max = ws.Cells(r, 11).Value
+                    ws.Cells(2, 17).Value = percent_max
+                    ws.Cells(2, 17).Style = "Percent"
+                    ws.Cells(2, 16).Value = ws.Cells(r, 9).Value
+          ElseIf percent_min > ws.Cells(r, 11).Value Then
+                    percent_min = ws.Cells(r, 11).Value
+                        ws.Cells(3, 17).Value = percent_min
+                        ws.Cells(3, 17).Style = "Percent"
+                        ws.Cells(3, 16).Value = ws.Cells(r, 9).Value
+   End If
+Next r
+
+
+
+    Next ws
+End Sub
+
+
